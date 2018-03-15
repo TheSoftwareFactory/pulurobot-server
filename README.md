@@ -27,19 +27,19 @@ Offer endpoints for:
 - authentication
 - request confirmation for delivery
 
-## WebSocket connections for stations
+## WebSocket connection for stations
 
 Used for:
 - realtime update of robots location
 - delivery status
-- robot statuses (unreachable, battery level)
+- robot statuses (availability, battery level)
 
-## WebSocket connections for robots
+## WebSocket connection for robots
 
 Used for:
 - receiving updates about location
 - receiving updates about battery level
-- sending commands to the robot
+- sending high level commands to the robot (go to location, stop moving, ...)
 
 ## Database storage
 
