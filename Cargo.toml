@@ -1,0 +1,8 @@
+[package]
+name = "server"
+version = "0.1.0"
+authors = ["Gabriel Gatu <gabriel.dny@gmail.com>"]
+
+[dependencies]
+rocket = "0.3.6"
+rocket_codegen = "0.3.6"
