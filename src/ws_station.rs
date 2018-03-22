@@ -1,4 +1,4 @@
-use ws::{connect, CloseCode, Error, Handler, Handshake, Message, Result, Sender};
+use ws::{CloseCode, Error, Handler, Handshake, Message, Result, Sender};
 
 pub struct StationWebSocket {
     out: Sender,
