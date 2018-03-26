@@ -23,6 +23,7 @@ pub fn generate(sub: &str) -> String {
 }
 
 pub fn decode(token: &str) -> Result<String, jsonwebtoken::errors::Error> {
-    let token_data = jsonwebtoken::decode::<Claims>(token, SECRET_KEY.as_ref(), &Validation::default())?;
+    let token_data =
+        jsonwebtoken::decode::<Claims>(token, SECRET_KEY.as_ref(), &Validation::default())?;
     Ok(token_data.claims.sub)
 }

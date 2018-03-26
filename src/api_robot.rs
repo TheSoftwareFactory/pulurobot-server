@@ -6,7 +6,7 @@ use rocket::data::{self, FromData};
 use rocket::http::Status;
 use rocket::Outcome::{Failure, Success};
 use db::robot::Robot;
-use auth::{ApiKey, jwt};
+use auth::{jwt, ApiKey};
 
 #[derive(Debug, Deserialize)]
 struct RegisterPayload {
@@ -33,7 +33,7 @@ impl FromData for RegisterPayload {
 
 #[post("/register", data = "<payload>")]
 fn register(payload: RegisterPayload) -> String {
-    let robot = Robot::create(&payload.name);
+    let robot = Robot::create(&payload.name).unwrap();
     jwt::generate(&robot.id.to_string())
 }
 
