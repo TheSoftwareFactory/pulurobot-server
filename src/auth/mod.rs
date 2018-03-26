@@ -7,7 +7,7 @@ use rocket::request::{self, FromRequest, Request};
 pub struct ApiKey(String);
 
 impl ApiKey {
-    pub fn as_i32(&self) -> i32 {
+    pub fn as_i64(&self) -> i64 {
         self.0.parse().unwrap()
     }
 }
