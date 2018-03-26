@@ -40,7 +40,8 @@ fn register(payload: RegisterPayload) -> String {
 // TODO: Need to write this endpoint
 #[patch("/battery/level", data = "<payload>")]
 fn update_battery_level(key: ApiKey, payload: String) -> String {
-    println!("{:?}", payload);
-    println!("{:?}", key.as_i32());
+    let id = key.as_i64();
+    let level = payload.parse::<i32>().unwrap();
+    Robot::update_battery_level(id, level).unwrap();
     String::from("OK")
 }
