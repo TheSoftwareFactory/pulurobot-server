@@ -6,6 +6,7 @@ use rocket::data::{self, FromData};
 use rocket::http::Status;
 use rocket::Outcome::{Failure, Success};
 use db::robot::Robot;
+use db::robot_battery_level::RobotBatteryLevel;
 use auth::{jwt, ApiKey};
 
 #[derive(Debug, Deserialize)]
@@ -34,6 +35,7 @@ impl FromData for RegisterPayload {
 #[post("/register", data = "<payload>")]
 fn register(payload: RegisterPayload) -> String {
     let robot = Robot::create(&payload.name).unwrap();
+    RobotBatteryLevel::create(robot.id).unwrap();
     jwt::generate(&robot.id.to_string())
 }
 
@@ -42,6 +44,6 @@ fn register(payload: RegisterPayload) -> String {
 fn update_battery_level(key: ApiKey, payload: String) -> String {
     let id = key.as_i64();
     let level = payload.parse::<i32>().unwrap();
-    Robot::update_battery_level(id, level).unwrap();
+    RobotBatteryLevel::update_battery_level(id, level).unwrap();
     String::from("OK")
 }
