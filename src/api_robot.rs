@@ -3,7 +3,8 @@ extern crate serde_json;
 use std::io::Read;
 use rocket::{Data, Request};
 use rocket::data::{self, FromData};
-use rocket::http::Status;
+use rocket::http::{Status};
+use rocket::response;
 use rocket::Outcome::{Failure, Success};
 use db::robot::Robot;
 use db::robot_battery_level::RobotBatteryLevel;
@@ -39,11 +40,10 @@ fn register(payload: RegisterPayload) -> String {
     jwt::generate(&robot.id.to_string())
 }
 
-// TODO: Need to write this endpoint
 #[patch("/battery/level", data = "<payload>")]
-fn update_battery_level(key: ApiKey, payload: String) -> String {
+fn update_battery_level(key: ApiKey, payload: String) -> Result<(), response::Failure> {
     let id = key.as_i64();
     let level = payload.parse::<i32>().unwrap();
     RobotBatteryLevel::update_battery_level(id, level).unwrap();
-    String::from("OK")
+    Ok(())
 }
