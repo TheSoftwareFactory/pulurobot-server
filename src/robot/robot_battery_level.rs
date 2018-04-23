@@ -1,7 +1,6 @@
-extern crate rusqlite;
-
 use std::time::{SystemTime, UNIX_EPOCH};
 use db::{get_connection};
+use super::rusqlite::Error;
 
 #[derive(Debug, Serialize)]
 pub struct RobotBatteryLevel {
@@ -11,7 +10,7 @@ pub struct RobotBatteryLevel {
 }
 
 impl RobotBatteryLevel {
-    pub fn create(robot_id: i64) -> Result<RobotBatteryLevel, rusqlite::Error> {
+    pub fn create(robot_id: i64) -> Result<RobotBatteryLevel, Error> {
         let current_time = {
             let since_the_epoch = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
             since_the_epoch.as_secs() * 1000 + since_the_epoch.subsec_nanos() as u64 / 1_000_000
@@ -30,7 +29,7 @@ impl RobotBatteryLevel {
         })
     }
 
-    pub fn update_battery_level(robot_id: i64, level: i32) -> Result<(), rusqlite::Error> {
+    pub fn update_battery_level(robot_id: i64, level: i32) -> Result<(), Error> {
         let conn = get_connection();
         let mut stmt = conn.prepare("UPDATE robot_battery_level SET level = ? WHERE robot_id = ?")?;
         stmt.execute(&[&level, &robot_id])?;

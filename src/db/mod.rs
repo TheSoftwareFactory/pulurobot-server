@@ -4,9 +4,6 @@ extern crate r2d2;
 extern crate r2d2_sqlite;
 extern crate rusqlite;
 
-pub mod robot;
-pub mod robot_battery_level;
-
 use std::path::Path;
 use std::env;
 use self::r2d2_sqlite::SqliteConnectionManager;

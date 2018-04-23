@@ -16,6 +16,7 @@ mod api_station;
 mod api_robot;
 mod auth;
 mod db;
+mod robot;
 
 use std::thread;
 use ws_station::StationWebSocket;

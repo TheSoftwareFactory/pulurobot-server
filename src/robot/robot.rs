@@ -1,8 +1,7 @@
-extern crate rusqlite;
-
 use std::fmt;
 use std::time::{SystemTime, UNIX_EPOCH};
 use db::{get_connection};
+use super::rusqlite::Error;
 
 pub enum Status {
     Available,
@@ -34,7 +33,7 @@ pub struct Robot {
 }
 
 impl Robot {
-    pub fn create(name: &str) -> Result<Robot, rusqlite::Error> {
+    pub fn create(name: &str) -> Result<Robot, Error> {
         let conn = get_connection();
         let mut stmt = conn.prepare("INSERT INTO robots (name) VALUES (?)")?;
         let id = stmt.insert(&[&name])?;
