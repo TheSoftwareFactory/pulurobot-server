@@ -14,8 +14,8 @@ lazy_static! {
 
 fn setup_db_pool() -> r2d2::Pool<r2d2_sqlite::SqliteConnectionManager> {
     let path = env::current_dir()
-            .unwrap()
-            .join(Path::new("db/database.db"));
+        .unwrap()
+        .join(Path::new("db/database.db"));
     let manager = SqliteConnectionManager::file(path);
     r2d2::Pool::new(manager).unwrap()
 }

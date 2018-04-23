@@ -1,6 +1,6 @@
 use std::fmt;
 use std::time::{SystemTime, UNIX_EPOCH};
-use db::{get_connection};
+use db::get_connection;
 use super::rusqlite::Error;
 
 pub enum Status {
@@ -34,19 +34,20 @@ pub struct Robot {
 
 impl Robot {
     pub fn create(name: &str) -> Result<Robot, Error> {
-        let conn = get_connection();
-        let mut stmt = conn.prepare("INSERT INTO robots (name) VALUES (?)")?;
-        let id = stmt.insert(&[&name])?;
-
         let current_time = {
             let since_the_epoch = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
             since_the_epoch.as_secs() * 1000 + since_the_epoch.subsec_nanos() as u64 / 1_000_000
         };
+        let formatted_status = format!("{}", Status::Unavailable);
+
+        let conn = get_connection();
+        let mut stmt = conn.prepare("INSERT INTO robots (name, status, created_at) VALUES (?, ?, ?)")?;
+        let id = stmt.insert(&[&name, &formatted_status, &current_time.to_string()])?;
 
         Ok(Robot {
             id: id,
             name: name.to_string(),
-            status: format!("{}", Status::Unavailable),
+            status: formatted_status,
             created_at: current_time,
         })
     }

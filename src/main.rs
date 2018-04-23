@@ -8,6 +8,7 @@ extern crate serde_derive;
 extern crate lazy_static;
 
 extern crate rocket;
+extern crate rocket_contrib;
 extern crate ws;
 
 mod ws_station;
@@ -36,7 +37,11 @@ fn main() {
         .mount("/api/v1/station", routes![api_station::auth])
         .mount(
             "/api/v1/robot",
-            routes![api_robot::register, api_robot::update_battery_level],
+            routes![
+                api_robot::register,
+                api_robot::update_battery_level,
+                api_robot::update_location
+            ],
         )
         .launch();
 }
