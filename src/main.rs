@@ -39,7 +39,7 @@ fn main() {
         .mount("/", routes![index])
         .mount(
             "/api/v1/station",
-            routes![api_station::auth, api_station::pin_location],
+            routes![api_station::register, api_station::pin_location],
         )
         .mount(
             "/api/v1/robot",

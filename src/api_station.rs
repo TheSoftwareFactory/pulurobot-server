@@ -5,6 +5,11 @@ use auth::{jwt, ApiKey};
 use station::{self, PinnedLocation};
 
 #[derive(Debug, Deserialize)]
+struct RegisterPayload {
+    name: String,
+}
+
+#[derive(Debug, Deserialize)]
 struct PinLocationPayload {
     name: String,
     x: i64,
@@ -12,16 +17,15 @@ struct PinLocationPayload {
     angle: i64,
 }
 
-#[derive(Debug, Deserialize)]
-struct AuthPayload {
-    public_key: String,
-}
-
-#[post("/auth", data = "<payload>")]
-fn auth(payload: Json<AuthPayload>) -> &'static str {
-    let private_key = &payload.public_key;
-    println!("{:?}", private_key);
-    "Welcome!"
+#[post("/register", data = "<payload>")]
+fn register(payload: Json<RegisterPayload>) -> Result<String, response::Failure> {
+    match station::create(&payload.name) {
+        Ok(station) => Ok(jwt::generate(&station.id.to_string())),
+        Err(e) => {
+            println!("{:?}", e);
+            Err(response::Failure::from(Status::raw(400)))
+        }
+    }
 }
 
 #[post("/pin-location", data = "<payload>")]
