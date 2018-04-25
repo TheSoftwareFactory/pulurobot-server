@@ -41,7 +41,8 @@ impl Robot {
         let formatted_status = format!("{}", Status::Unavailable);
 
         let conn = get_connection();
-        let mut stmt = conn.prepare("INSERT INTO robots (name, status, created_at) VALUES (?, ?, ?)")?;
+        let mut stmt =
+            conn.prepare("INSERT INTO robots (name, status, created_at) VALUES (?, ?, ?)")?;
         let id = stmt.insert(&[&name, &formatted_status, &current_time.to_string()])?;
 
         Ok(Robot {
@@ -54,9 +55,7 @@ impl Robot {
 
     pub fn set_status(id: i64, status: Status) -> Result<(), Error> {
         let conn = get_connection();
-        let mut stmt = conn.prepare(
-            "UPDATE robots SET status=? WHERE id=?",
-        )?;
+        let mut stmt = conn.prepare("UPDATE robots SET status=? WHERE id=?")?;
         let id = stmt.execute(&[&status.to_string(), &id])?;
         Ok(())
     }

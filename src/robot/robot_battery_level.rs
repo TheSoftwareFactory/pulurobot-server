@@ -33,7 +33,8 @@ impl RobotBatteryLevel {
 
     pub fn update_battery_level(robot_id: i64, level: i32) -> Result<(), Error> {
         let conn = get_connection();
-        let mut stmt = conn.prepare("UPDATE robot_battery_levels SET level = ? WHERE robot_id = ?")?;
+        let mut stmt =
+            conn.prepare("UPDATE robot_battery_levels SET level = ? WHERE robot_id = ?")?;
         stmt.execute(&[&level, &robot_id])?;
         Ok(())
     }

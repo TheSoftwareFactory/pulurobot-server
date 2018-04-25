@@ -14,7 +14,8 @@ pub struct PinnedLocation {
 impl PinnedLocation {
     pub fn create(name: &str, x: i64, y: i64, angle: i64) -> Result<PinnedLocation, Error> {
         let conn = get_connection();
-        let mut stmt = conn.prepare("INSERT INTO pinned_locations (name, x, y, angle) VALUES (?, ?, ?, ?)")?;
+        let mut stmt =
+            conn.prepare("INSERT INTO pinned_locations (name, x, y, angle) VALUES (?, ?, ?, ?)")?;
         let id = stmt.insert(&[&name, &x, &y, &angle])?;
 
         Ok(PinnedLocation {
