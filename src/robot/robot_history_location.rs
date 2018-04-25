@@ -12,6 +12,28 @@ pub struct RobotHistoryLocation {
 }
 
 impl RobotHistoryLocation {
+    pub fn all(robot_id: i64) -> Result<Vec<RobotHistoryLocation>, Error> {
+        let conn = get_connection();
+        let mut stmt = conn.prepare("SELECT robot_id, x, y, angle, created_at FROM robot_history_locations WHERE robot_id = ?").unwrap();
+
+        let mapped_rows = stmt.query_map(&[&robot_id], |row| RobotHistoryLocation {
+            robot_id: row.get(0),
+            x: row.get(1),
+            y: row.get(2),
+            angle: row.get(3),
+            created_at: {
+                let i64_val: i64 = row.get(4);
+                i64_val as u64
+            },
+        });
+
+        mapped_rows.and_then(|mapped_rows| {
+            Ok(mapped_rows
+                .map(|row| row.unwrap())
+                .collect::<Vec<RobotHistoryLocation>>())
+        })
+    }
+
     pub fn create(
         robot_id: i64,
         x: i64,

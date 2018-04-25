@@ -7,9 +7,9 @@ mod robot_history_location;
 
 use self::rusqlite::Error;
 use self::robot::Robot;
-use self::robot_battery_level::RobotBatteryLevel;
-use self::robot_location::RobotLocation;
-use self::robot_history_location::RobotHistoryLocation;
+pub use self::robot_battery_level::RobotBatteryLevel;
+pub use self::robot_location::RobotLocation;
+pub use self::robot_history_location::RobotHistoryLocation;
 
 pub fn create(name: &str) -> Result<Robot, Error> {
     let robot = Robot::create(name)?;
@@ -26,4 +26,8 @@ pub fn update_location(robot_id: i64, x: i64, y: i64, angle: i64) -> Result<(), 
     RobotLocation::update(robot_id, x, y, angle)?;
     RobotHistoryLocation::create(robot_id, x, y, angle)?;
     Ok(())
+}
+
+pub fn get_location_history(robot_id: i64) -> Result<Vec<RobotHistoryLocation>, Error> {
+    RobotHistoryLocation::all(robot_id)
 }
