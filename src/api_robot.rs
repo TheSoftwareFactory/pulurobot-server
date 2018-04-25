@@ -1,5 +1,3 @@
-extern crate serde_json;
-
 use std::io::Read;
 use rocket::{Data, Request};
 use rocket::data::{self, FromData};

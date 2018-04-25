@@ -7,8 +7,10 @@ extern crate serde_derive;
 #[macro_use]
 extern crate lazy_static;
 
-extern crate rocket;
+#[macro_use]
 extern crate rocket_contrib;
+
+extern crate rocket;
 extern crate ws;
 
 mod ws_station;
@@ -18,6 +20,7 @@ mod api_robot;
 mod auth;
 mod db;
 mod robot;
+mod station;
 
 use std::thread;
 use ws_station::StationWebSocket;
@@ -34,13 +37,16 @@ fn main() {
 
     rocket::ignite()
         .mount("/", routes![index])
-        .mount("/api/v1/station", routes![api_station::auth])
+        .mount(
+            "/api/v1/station",
+            routes![api_station::auth, api_station::pin_location],
+        )
         .mount(
             "/api/v1/robot",
             routes![
                 api_robot::register,
                 api_robot::update_battery_level,
-                api_robot::update_location
+                api_robot::update_location,
             ],
         )
         .launch();
