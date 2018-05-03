@@ -1,7 +1,7 @@
 use std::fmt;
-use std::time::{SystemTime, UNIX_EPOCH};
 use db::get_connection;
 use super::rusqlite::Error;
+use super::chrono::{Utc, DateTime, TimeZone};
 
 pub enum Status {
     Available,
@@ -29,7 +29,7 @@ pub struct Robot {
     pub id: i64,
     pub name: String,
     pub status: String,
-    pub created_at: u64,
+    pub created_at: DateTime<Utc>,
 }
 
 impl Robot {
@@ -42,8 +42,8 @@ impl Robot {
             name: row.get(1),
             status: row.get(2),
             created_at: {
-                let i64_val: i64 = row.get(3);
-                i64_val as u64
+                let secs: i64 = row.get(3);
+                Utc.timestamp(secs, 0)
             },
         });
 
@@ -55,16 +55,13 @@ impl Robot {
     }
 
     pub fn create(name: &str) -> Result<Robot, Error> {
-        let current_time = {
-            let since_the_epoch = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-            since_the_epoch.as_secs() * 1000 + since_the_epoch.subsec_nanos() as u64 / 1_000_000
-        };
+        let current_time = Utc::now();
         let formatted_status = format!("{}", Status::Unavailable);
 
         let conn = get_connection();
         let mut stmt =
             conn.prepare("INSERT INTO robots (name, status, created_at) VALUES (?, ?, ?)")?;
-        let id = stmt.insert(&[&name, &formatted_status, &current_time.to_string()])?;
+        let id = stmt.insert(&[&name, &formatted_status, &current_time.timestamp().to_string()])?;
 
         Ok(Robot {
             id: id,

@@ -1,4 +1,3 @@
-use std::time::{SystemTime, UNIX_EPOCH};
 use db::get_connection;
 use super::rusqlite::Error;
 

@@ -1,4 +1,5 @@
 extern crate rusqlite;
+extern crate chrono;
 
 mod robot;
 mod robot_battery_level;

@@ -1,6 +1,6 @@
-use std::time::{SystemTime, UNIX_EPOCH};
 use db::get_connection;
 use super::rusqlite::Error;
+use super::chrono::{Utc, DateTime, TimeZone};
 
 #[derive(Debug, Serialize)]
 pub struct RobotHistoryLocation {
@@ -8,7 +8,7 @@ pub struct RobotHistoryLocation {
     pub x: i64,
     pub y: i64,
     pub angle: i64,
-    pub created_at: u64,
+    pub created_at: DateTime<Utc>,
 }
 
 impl RobotHistoryLocation {
@@ -22,8 +22,8 @@ impl RobotHistoryLocation {
             y: row.get(2),
             angle: row.get(3),
             created_at: {
-                let i64_val: i64 = row.get(4);
-                i64_val as u64
+               let secs: i64 = row.get(3);
+                Utc.timestamp(secs, 0)
             },
         });
 
@@ -40,14 +40,11 @@ impl RobotHistoryLocation {
         y: i64,
         angle: i64,
     ) -> Result<RobotHistoryLocation, Error> {
-        let current_time = {
-            let since_the_epoch = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
-            since_the_epoch.as_secs() * 1000 + since_the_epoch.subsec_nanos() as u64 / 1_000_000
-        };
+        let current_time = Utc::now();
 
         let conn = get_connection();
         let mut stmt = conn.prepare("INSERT INTO robot_history_locations (robot_id, x, y, angle, created_at) VALUES (?, ?, ?, ?, ?)")?;
-        let id = stmt.insert(&[&robot_id, &x, &y, &angle, &current_time.to_string()])?;
+        let id = stmt.insert(&[&robot_id, &x, &y, &angle, &current_time.timestamp().to_string()])?;
 
         Ok(RobotHistoryLocation {
             robot_id: id,

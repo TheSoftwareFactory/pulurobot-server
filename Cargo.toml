@@ -18,6 +18,7 @@ r2d2_sqlite = "0.5.0"
 rusqlite = "0.13.0"
 
 lazy_static = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
 
 [dependencies.rocket_contrib]
 version = "0.3.6"
