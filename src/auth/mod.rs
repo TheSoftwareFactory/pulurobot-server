@@ -4,7 +4,7 @@ use rocket::Outcome;
 use rocket::http::Status;
 use rocket::request::{self, FromRequest, Request};
 
-pub struct ApiKey(String);
+pub struct ApiKey(pub String);
 
 impl ApiKey {
     pub fn as_i64(&self) -> i64 {

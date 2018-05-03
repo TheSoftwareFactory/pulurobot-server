@@ -10,6 +10,8 @@ extern crate lazy_static;
 extern crate rocket;
 extern crate rocket_contrib;
 extern crate ws;
+extern crate serde;
+extern crate serde_json;
 
 mod ws_station;
 mod ws_robot;

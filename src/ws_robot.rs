@@ -1,24 +1,79 @@
 use ws::{CloseCode, Error, Handler, Handshake, Message, Result, Sender};
+use serde_json::{self, Value};
+use auth::{jwt, ApiKey};
+use robot;
 
 pub struct RobotWebSocket {
+    id: i64,
     out: Sender,
 }
 
 impl From<Sender> for RobotWebSocket {
     fn from(out: Sender) -> Self {
-        RobotWebSocket { out }
+        RobotWebSocket { id: 0, out: out }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct UpdateLocationPayload {
+    x: i64,
+    y: i64,
+    angle: i64,
+}
+
+impl UpdateLocationPayload {
+    fn from_str(json: &str) -> Option<MessagePayload> {
+        match serde_json::from_str::<UpdateLocationPayload>(json) {
+            Ok(payload) => Some(MessagePayload::LocationUpdate(payload)),
+            Err(_) => None,
+        }
+    }
+}
+
+enum MessagePayload {
+    LocationUpdate(UpdateLocationPayload),
+}
+
+impl MessagePayload {
+    fn from_str(json: &str) -> Option<MessagePayload> {
+        match serde_json::from_str::<Value>(&json) {
+            Ok(v) => match v["action"] {
+                Value::String(ref s) if s == "LOCATION_UPDATE" => {
+                    UpdateLocationPayload::from_str(v["payload"].to_string().as_ref())
+                }
+                _ => None,
+            },
+            Err(_) => None,
+        }
     }
 }
 
 impl Handler for RobotWebSocket {
-    fn on_open(&mut self, _: Handshake) -> Result<()> {
-        println!("Robot connected");
-        self.out.send("Connected successfull")
+    fn on_open(&mut self, handshake: Handshake) -> Result<()> {
+        let s = handshake.request.resource();
+        match s.get(1..s.len()) {
+            Some(jwt) => match jwt::decode(jwt) {
+                Ok(token) => {
+                    self.id = ApiKey(token).as_i64();
+                    self.out.send("OK")
+                }
+                Err(_) => self.out.send("ERROR_UNAUTHORIZED"),
+            },
+            None => self.out.send("ERROR_INVALID_JWT"),
+        }
     }
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
-        println!("Robot sent message: {:?}", msg);
-        self.out.send("Message received successfully")
+        let json = msg.into_text()?;
+        match MessagePayload::from_str(&json) {
+            Some(MessagePayload::LocationUpdate(payload)) => {
+                match robot::update_location(self.id, payload.x, payload.y, payload.angle) {
+                    Ok(_) => self.out.send("OK"),
+                    Err(_) => self.out.send("ERROR_MALFORMED_INPUT"),
+                }
+            }
+            None => self.out.send("ERROR_MALFORMED_INPUT"),
+        }
     }
 
     fn on_error(&mut self, err: Error) {
