@@ -7,10 +7,8 @@ extern crate serde_derive;
 #[macro_use]
 extern crate lazy_static;
 
-#[macro_use]
-extern crate rocket_contrib;
-
 extern crate rocket;
+extern crate rocket_contrib;
 extern crate ws;
 
 mod ws_station;

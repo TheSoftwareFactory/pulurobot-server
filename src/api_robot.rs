@@ -1,9 +1,5 @@
-use std::io::Read;
-use rocket::{Data, Request};
-use rocket::data::{self, FromData};
 use rocket::http::Status;
 use rocket::response;
-use rocket::Outcome::{Failure, Success};
 use rocket_contrib::Json;
 use robot;
 use auth::{jwt, ApiKey};

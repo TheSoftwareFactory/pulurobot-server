@@ -1,6 +1,6 @@
 use db::get_connection;
 use super::rusqlite::Error;
-use super::chrono::{Utc, DateTime, TimeZone};
+use super::chrono::{Utc, DateTime};
 
 #[derive(Debug, Serialize)]
 pub struct RobotLocation {
