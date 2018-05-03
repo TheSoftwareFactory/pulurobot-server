@@ -33,6 +33,27 @@ pub struct Robot {
 }
 
 impl Robot {
+    pub fn all() -> Result<Vec<Robot>, Error> {
+        let conn = get_connection();
+        let mut stmt = conn.prepare("SELECT id, name, status, created_at FROM robots").unwrap();
+
+        let mapped_rows = stmt.query_map(&[], |row| Robot {
+            id: row.get(0),
+            name: row.get(1),
+            status: row.get(2),
+            created_at: {
+                let i64_val: i64 = row.get(3);
+                i64_val as u64
+            },
+        });
+
+        mapped_rows.and_then(|mapped_rows| {
+            Ok(mapped_rows
+                .map(|row| row.unwrap())
+                .collect::<Vec<Robot>>())
+        })
+    }
+
     pub fn create(name: &str) -> Result<Robot, Error> {
         let current_time = {
             let since_the_epoch = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();

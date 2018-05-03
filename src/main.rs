@@ -43,6 +43,7 @@ fn main() {
                 api_station::register,
                 api_station::pin_location,
                 api_station::robot_location_history,
+                api_station::all_robots,
             ],
         )
         .mount(

@@ -3,7 +3,7 @@ use rocket::response;
 use rocket::http::Status;
 use auth::{jwt, ApiKey};
 use station::{self, PinnedLocation};
-use robot::{self, RobotHistoryLocation};
+use robot::{self, Robot, RobotHistoryLocation};
 
 #[derive(Debug, Deserialize)]
 struct RegisterPayload {
@@ -52,6 +52,16 @@ fn robot_location_history(
 ) -> Result<Json<Vec<RobotHistoryLocation>>, response::Failure> {
     match robot::get_location_history(data.robot_id) {
         Ok(locations) => Ok(Json(locations)),
+        Err(_) => Err(response::Failure::from(Status::raw(400))),
+    }
+}
+
+#[get("/robot/all")]
+fn all_robots(
+    _key: ApiKey
+) -> Result<Json<Vec<Robot>>, response::Failure> {
+    match robot::all_robots() {
+        Ok(robots) => Ok(Json(robots)),
         Err(_) => Err(response::Failure::from(Status::raw(400))),
     }
 }
