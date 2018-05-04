@@ -1,7 +1,7 @@
 use std::fmt;
 use db::get_connection;
 use super::rusqlite::Error;
-use super::chrono::{Utc, DateTime, TimeZone};
+use super::chrono::{DateTime, TimeZone, Utc};
 
 #[derive(Debug)]
 pub enum Status {
@@ -36,7 +36,8 @@ pub struct Robot {
 impl Robot {
     pub fn all() -> Result<Vec<Robot>, Error> {
         let conn = get_connection();
-        let mut stmt = conn.prepare("SELECT id, name, status, created_at FROM robots").unwrap();
+        let mut stmt = conn.prepare("SELECT id, name, status, created_at FROM robots")
+            .unwrap();
 
         let mapped_rows = stmt.query_map(&[], |row| Robot {
             id: row.get(0),
@@ -48,11 +49,8 @@ impl Robot {
             },
         });
 
-        mapped_rows.and_then(|mapped_rows| {
-            Ok(mapped_rows
-                .map(|row| row.unwrap())
-                .collect::<Vec<Robot>>())
-        })
+        mapped_rows
+            .and_then(|mapped_rows| Ok(mapped_rows.map(|row| row.unwrap()).collect::<Vec<Robot>>()))
     }
 
     pub fn create(name: &str) -> Result<Robot, Error> {
@@ -62,7 +60,11 @@ impl Robot {
         let conn = get_connection();
         let mut stmt =
             conn.prepare("INSERT INTO robots (name, status, created_at) VALUES (?, ?, ?)")?;
-        let id = stmt.insert(&[&name, &formatted_status, &current_time.timestamp().to_string()])?;
+        let id = stmt.insert(&[
+            &name,
+            &formatted_status,
+            &current_time.timestamp().to_string(),
+        ])?;
 
         Ok(Robot {
             id: id,

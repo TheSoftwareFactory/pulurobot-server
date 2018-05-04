@@ -1,5 +1,5 @@
-extern crate rusqlite;
 extern crate chrono;
+extern crate rusqlite;
 
 mod station;
 mod pinned_location;

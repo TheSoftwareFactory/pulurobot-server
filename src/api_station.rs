@@ -57,9 +57,7 @@ fn robot_location_history(
 }
 
 #[get("/robot/all")]
-fn all_robots(
-    _key: ApiKey
-) -> Result<Json<Vec<Robot>>, response::Failure> {
+fn all_robots(_key: ApiKey) -> Result<Json<Vec<Robot>>, response::Failure> {
     match robot::all_robots() {
         Ok(robots) => Ok(Json(robots)),
         Err(_) => Err(response::Failure::from(Status::raw(400))),

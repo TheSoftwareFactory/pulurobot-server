@@ -1,6 +1,6 @@
 use db::get_connection;
 use super::rusqlite::Error;
-use super::chrono::{Utc, DateTime};
+use super::chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize)]
 pub struct Station {

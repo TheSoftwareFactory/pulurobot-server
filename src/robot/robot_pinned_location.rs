@@ -26,7 +26,11 @@ impl RobotPinnedLocation {
         })
     }
 
-    pub fn create(pinned_location_id: i64, robot_id: i64, tag: &str) -> Result<RobotPinnedLocation, Error> {
+    pub fn create(
+        pinned_location_id: i64,
+        robot_id: i64,
+        tag: &str,
+    ) -> Result<RobotPinnedLocation, Error> {
         let conn = get_connection();
         let mut stmt =
             conn.prepare("INSERT INTO robot_pinned_locations (pinned_location_id, robot_id, tag) VALUES (?, ?, ?)")?;

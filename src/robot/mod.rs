@@ -13,7 +13,7 @@ pub use self::robot_pinned_location::RobotPinnedLocation;
 pub use self::robot_battery_level::RobotBatteryLevel;
 pub use self::robot_location::RobotLocation;
 pub use self::robot_history_location::RobotHistoryLocation;
-use ::station::PinnedLocation;
+use station::PinnedLocation;
 
 pub fn create(name: &str) -> Result<Robot, Error> {
     let robot = Robot::create(name)?;
@@ -89,9 +89,7 @@ fn is_robot_location_inside_charge_station(location: &RobotLocation) -> bool {
     let l1 = (location.x, location.y);
     let l2 = pinned_charge_stations
         .into_iter()
-        .map(|pinned_station| {
-            PinnedLocation::get(pinned_station.pinned_location_id).unwrap()
-        })
+        .map(|pinned_station| PinnedLocation::get(pinned_station.pinned_location_id).unwrap())
         .map(|loc| (loc.x, loc.y))
         .collect::<Vec<(i64, i64)>>();
     l2.contains(&l1)

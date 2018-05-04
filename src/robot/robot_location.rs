@@ -14,8 +14,9 @@ pub struct RobotLocation {
 impl RobotLocation {
     pub fn get(robot_id: i64) -> Result<RobotLocation, Error> {
         let conn = get_connection();
-        let mut stmt =
-            conn.prepare("SELECT robot_id, x, y, angle, updated_at FROM robot_locations WHERE robot_id = ?")?;
+        let mut stmt = conn.prepare(
+            "SELECT robot_id, x, y, angle, updated_at FROM robot_locations WHERE robot_id = ?",
+        )?;
 
         let mapped_rows = stmt.query_map(&[&robot_id], |row| RobotLocation {
             robot_id: row.get(0),

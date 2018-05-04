@@ -95,7 +95,7 @@ impl Handler for RobotWebSocket {
                     Ok(_) => {
                         robot::update_status(self.id, true);
                         self.out.send("OK")
-                    },
+                    }
                     Err(_) => self.out.send("ERROR_MALFORMED_INPUT"),
                 }
             }

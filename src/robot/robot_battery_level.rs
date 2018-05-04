@@ -1,6 +1,6 @@
 use db::get_connection;
 use super::rusqlite::Error;
-use super::chrono::{Utc, DateTime};
+use super::chrono::{DateTime, Utc};
 
 #[derive(Debug, Serialize)]
 pub struct RobotBatteryLevel {
@@ -18,7 +18,11 @@ impl RobotBatteryLevel {
         let mut stmt = conn.prepare(
             "INSERT INTO robot_battery_levels (robot_id, level, updated_at) VALUES (?, ?, ?)",
         )?;
-        let id = stmt.insert(&[&robot_id, &default_battery_level, &current_time.timestamp().to_string()])?;
+        let id = stmt.insert(&[
+            &robot_id,
+            &default_battery_level,
+            &current_time.timestamp().to_string(),
+        ])?;
 
         Ok(RobotBatteryLevel {
             robot_id: id,

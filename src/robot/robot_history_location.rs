@@ -1,6 +1,6 @@
 use db::get_connection;
 use super::rusqlite::Error;
-use super::chrono::{Utc, DateTime, TimeZone};
+use super::chrono::{DateTime, TimeZone, Utc};
 
 #[derive(Debug, Serialize)]
 pub struct RobotHistoryLocation {
@@ -22,7 +22,7 @@ impl RobotHistoryLocation {
             y: row.get(2),
             angle: row.get(3),
             created_at: {
-               let secs: i64 = row.get(3);
+                let secs: i64 = row.get(3);
                 Utc.timestamp(secs, 0)
             },
         });
@@ -44,7 +44,13 @@ impl RobotHistoryLocation {
 
         let conn = get_connection();
         let mut stmt = conn.prepare("INSERT INTO robot_history_locations (robot_id, x, y, angle, created_at) VALUES (?, ?, ?, ?, ?)")?;
-        let id = stmt.insert(&[&robot_id, &x, &y, &angle, &current_time.timestamp().to_string()])?;
+        let id = stmt.insert(&[
+            &robot_id,
+            &x,
+            &y,
+            &angle,
+            &current_time.timestamp().to_string(),
+        ])?;
 
         Ok(RobotHistoryLocation {
             robot_id: id,
