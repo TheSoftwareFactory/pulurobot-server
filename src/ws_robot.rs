@@ -92,7 +92,10 @@ impl Handler for RobotWebSocket {
         match Event::from_str(&json) {
             Some(Event::LocationUpdate(payload)) => {
                 match robot::update_location(self.id, payload.x, payload.y, payload.angle) {
-                    Ok(_) => self.out.send("OK"),
+                    Ok(_) => {
+                        robot::update_status(self.id, true);
+                        self.out.send("OK")
+                    },
                     Err(_) => self.out.send("ERROR_MALFORMED_INPUT"),
                 }
             }
@@ -107,10 +110,13 @@ impl Handler for RobotWebSocket {
     }
 
     fn on_error(&mut self, err: Error) {
+        robot::update_status(self.id, false);
         println!("The server encountered an error: {:?}", err);
     }
 
     fn on_close(&mut self, code: CloseCode, reason: &str) {
+        robot::update_status(self.id, false);
+
         match code {
             CloseCode::Normal => println!("The robot is done with the connection."),
             CloseCode::Away => println!("The robot is leaving the connection."),

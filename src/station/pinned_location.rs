@@ -11,6 +11,24 @@ pub struct PinnedLocation {
 }
 
 impl PinnedLocation {
+    pub fn get(id: i64) -> Result<PinnedLocation, Error> {
+        let conn = get_connection();
+        let mut stmt = conn.prepare("SELECT id, name, x, y, angle FROM pinned_locations WHERE id = ?")
+            .unwrap();
+
+        let mapped_rows = stmt.query_map(&[&id], |row| PinnedLocation {
+            id: row.get(0),
+            name: row.get(1),
+            x: row.get(2),
+            y: row.get(3),
+            angle: row.get(4),
+        });
+
+        mapped_rows
+            .and_then(|rows| Ok(rows.map(|row| row.unwrap()).collect::<Vec<PinnedLocation>>()))
+            .and_then(|mut locations| locations.pop().ok_or(Error::IntegralValueOutOfRange(1, 1)))
+    }
+
     pub fn create(name: &str, x: i64, y: i64, angle: i64) -> Result<PinnedLocation, Error> {
         let conn = get_connection();
         let mut stmt =

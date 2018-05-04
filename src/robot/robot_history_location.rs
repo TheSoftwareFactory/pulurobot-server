@@ -14,7 +14,7 @@ pub struct RobotHistoryLocation {
 impl RobotHistoryLocation {
     pub fn all(robot_id: i64) -> Result<Vec<RobotHistoryLocation>, Error> {
         let conn = get_connection();
-        let mut stmt = conn.prepare("SELECT robot_id, x, y, angle, created_at FROM robot_history_locations WHERE robot_id = ?").unwrap();
+        let mut stmt = conn.prepare("SELECT robot_id, x, y, angle, created_at FROM robot_history_locations WHERE robot_id = ? ORDER BY created_at DESC").unwrap();
 
         let mapped_rows = stmt.query_map(&[&robot_id], |row| RobotHistoryLocation {
             robot_id: row.get(0),

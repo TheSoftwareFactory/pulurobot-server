@@ -3,6 +3,7 @@ use db::get_connection;
 use super::rusqlite::Error;
 use super::chrono::{Utc, DateTime, TimeZone};
 
+#[derive(Debug)]
 pub enum Status {
     Available,
     Waiting,
@@ -71,7 +72,7 @@ impl Robot {
         })
     }
 
-    pub fn set_status(id: i64, status: Status) -> Result<(), Error> {
+    pub fn update_status(id: i64, status: Status) -> Result<(), Error> {
         let conn = get_connection();
         let mut stmt = conn.prepare("UPDATE robots SET status=? WHERE id=?")?;
         stmt.execute(&[&status.to_string(), &id])?;
