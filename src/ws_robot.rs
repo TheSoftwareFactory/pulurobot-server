@@ -36,14 +36,16 @@ enum Event {
 
 impl Event {
     fn from_str(json: &str) -> Option<Event> {
-        match serde_json::from_str::<Value>(&json) {
-            Ok(v) => match v["action"] {
-                Value::String(ref s) if s == "LOCATION_UPDATE" => {
-                    UpdateLocationPayload::from_str(v["payload"].to_string().as_ref())
-                }
+        if let Ok(v) = serde_json::from_str::<Value>(&json) {
+            let action = v["action"].to_string();
+            let payload = v["payload"].to_string();
+
+            match action.as_str() {
+                "LOCATION_UPDATE" => UpdateLocationPayload::from_str(&payload),
                 _ => None,
-            },
-            Err(_) => None,
+            }
+        } else {
+            None
         }
     }
 }
@@ -65,6 +67,7 @@ impl Handler for RobotWebSocket {
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
         let json = msg.into_text()?;
+
         match Event::from_str(&json) {
             Some(Event::LocationUpdate(payload)) => {
                 match robot::update_location(self.id, payload.x, payload.y, payload.angle) {

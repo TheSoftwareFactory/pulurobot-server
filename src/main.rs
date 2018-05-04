@@ -1,3 +1,4 @@
+#![feature(match_default_bindings, nll)]
 #![feature(plugin, custom_derive)]
 #![plugin(rocket_codegen)]
 
