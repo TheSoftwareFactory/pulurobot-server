@@ -30,18 +30,39 @@ impl UpdateLocationPayload {
     }
 }
 
+#[derive(Debug, Deserialize)]
+struct UpdateBatteryLevelPayload {
+    level: i32,
+}
+
+impl UpdateBatteryLevelPayload {
+    fn from_str(json: &str) -> Option<Event> {
+        match serde_json::from_str::<UpdateBatteryLevelPayload>(json) {
+            Ok(payload) => Some(Event::BatteryLevelUpdate(payload)),
+            Err(_) => None,
+        }
+    }
+}
+
+#[derive(Debug)]
 enum Event {
     LocationUpdate(UpdateLocationPayload),
+    BatteryLevelUpdate(UpdateBatteryLevelPayload),
 }
 
 impl Event {
     fn from_str(json: &str) -> Option<Event> {
         if let Ok(v) = serde_json::from_str::<Value>(&json) {
-            let action = v["action"].to_string();
+            let action = v["action"]
+                .to_string()
+                .as_str()
+                .replace("\"", "")
+                .to_string();
             let payload = v["payload"].to_string();
 
-            match action.as_str() {
+            match action.as_ref() {
                 "LOCATION_UPDATE" => UpdateLocationPayload::from_str(&payload),
+                "BATTERY_LEVEL_UPDATE" => UpdateBatteryLevelPayload::from_str(&payload),
                 _ => None,
             }
         } else {
@@ -71,6 +92,12 @@ impl Handler for RobotWebSocket {
         match Event::from_str(&json) {
             Some(Event::LocationUpdate(payload)) => {
                 match robot::update_location(self.id, payload.x, payload.y, payload.angle) {
+                    Ok(_) => self.out.send("OK"),
+                    Err(_) => self.out.send("ERROR_MALFORMED_INPUT"),
+                }
+            }
+            Some(Event::BatteryLevelUpdate(payload)) => {
+                match robot::update_battery_level(self.id, payload.level) {
                     Ok(_) => self.out.send("OK"),
                     Err(_) => self.out.send("ERROR_MALFORMED_INPUT"),
                 }
