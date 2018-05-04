@@ -22,20 +22,20 @@ struct UpdateLocationPayload {
 }
 
 impl UpdateLocationPayload {
-    fn from_str(json: &str) -> Option<MessagePayload> {
+    fn from_str(json: &str) -> Option<Event> {
         match serde_json::from_str::<UpdateLocationPayload>(json) {
-            Ok(payload) => Some(MessagePayload::LocationUpdate(payload)),
+            Ok(payload) => Some(Event::LocationUpdate(payload)),
             Err(_) => None,
         }
     }
 }
 
-enum MessagePayload {
+enum Event {
     LocationUpdate(UpdateLocationPayload),
 }
 
-impl MessagePayload {
-    fn from_str(json: &str) -> Option<MessagePayload> {
+impl Event {
+    fn from_str(json: &str) -> Option<Event> {
         match serde_json::from_str::<Value>(&json) {
             Ok(v) => match v["action"] {
                 Value::String(ref s) if s == "LOCATION_UPDATE" => {
@@ -65,8 +65,8 @@ impl Handler for RobotWebSocket {
 
     fn on_message(&mut self, msg: Message) -> Result<()> {
         let json = msg.into_text()?;
-        match MessagePayload::from_str(&json) {
-            Some(MessagePayload::LocationUpdate(payload)) => {
+        match Event::from_str(&json) {
+            Some(Event::LocationUpdate(payload)) => {
                 match robot::update_location(self.id, payload.x, payload.y, payload.angle) {
                     Ok(_) => self.out.send("OK"),
                     Err(_) => self.out.send("ERROR_MALFORMED_INPUT"),
