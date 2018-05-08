@@ -14,6 +14,7 @@ extern crate serde;
 extern crate serde_json;
 extern crate ws;
 
+mod dispatcher;
 mod ws_station;
 mod ws_robot;
 mod api_station;

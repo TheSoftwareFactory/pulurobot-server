@@ -165,3 +165,15 @@ Base endpoint path: `ws://localhost:3002`
 Stores informations about:
 
 - robot status, location
+
+## Logic inside the server
+
+The server inferes automatically the status of the robot based on some conditions, such as current robot position,
+history of immediately previous positions, presence of stations close by and last communication status with the server.
+Based on all these conditions, the server flags the robot with one of these statuses:
+
+- **AVAILABLE**: Robot powered on and waiting at a charging point
+- **WAITING**: Robot available for work but not at the charging station (maybe just rebooted from failure or waiting at a cafe)
+- **BUSY**: Robot currently moving and doing some work
+- **UNREACHABLE**: Lost connection with the robot or powered off not at the charging station
+- **UNAVAILABLE**: Robot powered off at a charging station

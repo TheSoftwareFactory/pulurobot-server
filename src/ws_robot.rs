@@ -2,19 +2,9 @@ use ws::{CloseCode, Error, Handler, Handshake, Message, Result, Sender};
 use serde_json::{self, Value};
 use auth::{jwt, ApiKey};
 use robot;
+use dispatcher::Dispatcher;
 
-pub struct RobotWebSocket {
-    id: i64,
-    out: Sender,
-}
-
-impl From<Sender> for RobotWebSocket {
-    fn from(out: Sender) -> Self {
-        RobotWebSocket { id: 0, out: out }
-    }
-}
-
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct UpdateLocationPayload {
     x: i64,
     y: i64,
@@ -30,7 +20,7 @@ impl UpdateLocationPayload {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 struct UpdateBatteryLevelPayload {
     level: i32,
 }
@@ -71,6 +61,17 @@ impl Event {
     }
 }
 
+pub struct RobotWebSocket {
+    id: i64,
+    out: Sender,
+}
+
+impl From<Sender> for RobotWebSocket {
+    fn from(out: Sender) -> Self {
+        RobotWebSocket { id: 0, out: out }
+    }
+}
+
 impl Handler for RobotWebSocket {
     fn on_open(&mut self, handshake: Handshake) -> Result<()> {
         let s = handshake.request.resource();
@@ -78,6 +79,13 @@ impl Handler for RobotWebSocket {
             Some(jwt) => match jwt::decode(jwt) {
                 Ok(token) => {
                     self.id = ApiKey(token).as_i64();
+
+                    let event = "CONNECTED_ROBOT";
+                    let mut message = String::from("{\"id\": ");
+                    message.push_str(&format!("{}", self.id));
+                    message.push('}');
+                    Dispatcher::publish_event(event, message);
+
                     self.out.send("OK")
                 }
                 Err(_) => self.out.send("ERROR_UNAUTHORIZED"),
@@ -93,6 +101,10 @@ impl Handler for RobotWebSocket {
             Some(Event::LocationUpdate(payload)) => {
                 match robot::update_location(self.id, payload.x, payload.y, payload.angle) {
                     Ok(_) => {
+                        let event = format!("LOCATION_UPDATE#{}", self.id);
+                        let message = serde_json::to_string(&payload).unwrap();
+                        Dispatcher::publish_event(&event, message);
+
                         robot::update_status(self.id, true);
                         self.out.send("OK")
                     }
@@ -101,7 +113,13 @@ impl Handler for RobotWebSocket {
             }
             Some(Event::BatteryLevelUpdate(payload)) => {
                 match robot::update_battery_level(self.id, payload.level) {
-                    Ok(_) => self.out.send("OK"),
+                    Ok(_) => {
+                        let event = format!("BATTERY_LEVEL_UPDATE#{}", self.id);
+                        let message = serde_json::to_string(&payload).unwrap();
+                        Dispatcher::publish_event(&event, message);
+
+                        self.out.send("OK")
+                    },
                     Err(_) => self.out.send("ERROR_MALFORMED_INPUT"),
                 }
             }
