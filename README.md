@@ -118,6 +118,35 @@ Used for:
 - delivery status
 - robot statuses (availability, battery level)
 
+Base endpoint path: `ws://localhost:3001`
+- OPEN `ws://localhost:3001/JWT_HERE`: Open a new ws connection and auth as a valid station
+    ```json
+    // Success message: "OK"
+    // Error message: "ERROR_INVALID_JWT" | "ERROR_UNAUTHORIZED"
+    ```
+
+- SUBSCRIBE TO EVENT:
+    ```json
+    {
+        "action": "SUBSCRIBE_TO_EVENT",
+        "payload": {
+            "event": "LOCATION_UPDATE#1"
+        }
+    }
+
+    // Success message: "OK"
+    // Error message: "ERROR_MALFORMED_INPUT"
+
+    // This subscribes to an event. When someone in the system will trigger this specific event,
+    // the ws is going to receive a message from it.
+    // Currently there are 3 messages supported:
+    // 1) CONNECTED_ROBOT: A robot just established a connection with the server. Will yield the id of the robot
+    // 2) LOCATION_UPDATE#<id>: Location updates from a specific robot
+    // 3) BATTERY_LEVEL_UPDATE#<id>: Battery level updates from a specific robot
+
+    // <id> is the id of the robot we want to listen to
+    ```
+
 ## WebSocket connection for robots
 
 Used for:
