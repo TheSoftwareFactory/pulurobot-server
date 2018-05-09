@@ -218,8 +218,10 @@ Base endpoint path: `ws://localhost:3002`
 
 ## Database storage
 
-Stores informations about:
+The database is based on sqlite, because it allows us to have a fast and complete db, that is also embeddable easily, since
+it is based on a single file.
 
+Stores informations about:
 - robot status, location
 
 ## Logic inside the server
