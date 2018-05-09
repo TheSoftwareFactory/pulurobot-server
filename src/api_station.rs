@@ -41,7 +41,7 @@ fn register(payload: Json<RegisterPayload>) -> Result<String, response::Failure>
     }
 }
 
-#[get("/pinned_locations/all")]
+#[get("/pinned_location/all")]
 fn get_pinned_locations(_key: ApiKey) -> Result<Json<Vec<PinnedLocation>>, response::Failure> {
     match station::all_pinned_locations() {
         Ok(locations) => Ok(Json(locations)),
@@ -49,7 +49,7 @@ fn get_pinned_locations(_key: ApiKey) -> Result<Json<Vec<PinnedLocation>>, respo
     }
 }
 
-#[post("/pin-location", data = "<payload>")]
+#[post("/pinned_location/new", data = "<payload>")]
 fn pin_location(
     _key: ApiKey,
     payload: Json<PinLocationPayload>,
@@ -60,7 +60,7 @@ fn pin_location(
     }
 }
 
-#[post("/robot/pin-location", data = "<payload>")]
+#[post("/robot/pinned_location/new", data = "<payload>")]
 fn robot_pin_location(
     _key: ApiKey,
     payload: Json<PinRobotLocationPayload>,
