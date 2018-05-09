@@ -3,7 +3,7 @@ use rocket::response;
 use rocket::http::Status;
 use auth::{jwt, ApiKey};
 use station::{self, PinnedLocation};
-use robot::{self, Robot, RobotHistoryLocation};
+use robot::{self, Robot, RobotHistoryLocation, RobotPinnedLocation};
 
 #[derive(Debug, Deserialize)]
 struct RegisterPayload {
@@ -16,6 +16,13 @@ struct PinLocationPayload {
     x: i64,
     y: i64,
     angle: i64,
+}
+
+#[derive(Debug, Deserialize)]
+struct PinRobotLocationPayload {
+    robot_id: i64,
+    pinned_location_id: i64,
+    tag: String,
 }
 
 #[derive(FromForm)]
@@ -34,12 +41,31 @@ fn register(payload: Json<RegisterPayload>) -> Result<String, response::Failure>
     }
 }
 
+#[get("/pinned_locations/all")]
+fn get_pinned_locations(_key: ApiKey) -> Result<Json<Vec<PinnedLocation>>, response::Failure> {
+    match station::all_pinned_locations() {
+        Ok(locations) => Ok(Json(locations)),
+        Err(_) => Err(response::Failure::from(Status::raw(400))),
+    }
+}
+
 #[post("/pin-location", data = "<payload>")]
 fn pin_location(
     _key: ApiKey,
     payload: Json<PinLocationPayload>,
 ) -> Result<Json<PinnedLocation>, response::Failure> {
     match station::pin_location(&payload.name, payload.x, payload.y, payload.angle) {
+        Ok(pinned_location) => Ok(Json(pinned_location)),
+        Err(_) => Err(response::Failure::from(Status::raw(400))),
+    }
+}
+
+#[post("/robot/pin-location", data = "<payload>")]
+fn robot_pin_location(
+    _key: ApiKey,
+    payload: Json<PinRobotLocationPayload>,
+) -> Result<Json<RobotPinnedLocation>, response::Failure> {
+    match robot::pin_location(payload.pinned_location_id, payload.robot_id, &payload.tag) {
         Ok(pinned_location) => Ok(Json(pinned_location)),
         Err(_) => Err(response::Failure::from(Status::raw(400))),
     }

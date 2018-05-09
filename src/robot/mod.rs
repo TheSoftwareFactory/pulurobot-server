@@ -32,6 +32,10 @@ pub fn update_location(robot_id: i64, x: i64, y: i64, angle: i64) -> Result<(), 
     Ok(())
 }
 
+pub fn pin_location(pinned_location_id: i64, robot_id: i64, tag: &str) -> Result<RobotPinnedLocation, Error> {
+    RobotPinnedLocation::create(pinned_location_id, robot_id, tag)
+}
+
 pub fn get_location_history(robot_id: i64) -> Result<Vec<RobotHistoryLocation>, Error> {
     RobotHistoryLocation::all(robot_id)
 }

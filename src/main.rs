@@ -43,7 +43,9 @@ fn main() {
             "/api/v1/station",
             routes![
                 api_station::register,
+                api_station::get_pinned_locations,
                 api_station::pin_location,
+                api_station::robot_pin_location,
                 api_station::robot_location_history,
                 api_station::all_robots,
             ],
