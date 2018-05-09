@@ -64,9 +64,12 @@ Base endpoint path: `/api/v1/station`
     {
         "robot_id": 1,
         "pinned_location_id": 1,
-        "tag": "CHARGING_POINT"
+        "tag": "CHARGE_STATION"
     }
     // application/json
+
+    // Note that tags are important for the system, since the tag "CHARGE_STATION" is used to
+    // update the current robot status.
     ```
 
 - [JWT REQUIRED] GET `/api/v1/station/robot/location/history?<params>`: Get location history of a robot
@@ -230,3 +233,7 @@ Based on all these conditions, the server flags the robot with one of these stat
 - **BUSY**: Robot currently moving and doing some work
 - **UNREACHABLE**: Lost connection with the robot or powered off not at the charging station
 - **UNAVAILABLE**: Robot powered off at a charging station
+
+**Important**: When pinning a robot to a location, the tag is important for the client, but also for the server:
+the tag "CHARGE_STATION" is used by the server to retrieve all pinned locations that are charging stations, and then checking
+if the robot is inside one of them (this is used in the auto-updating mechanism for the robot status, explained above).
