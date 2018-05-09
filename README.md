@@ -237,3 +237,36 @@ Based on all these conditions, the server flags the robot with one of these stat
 **Important**: When pinning a robot to a location, the tag is important for the client, but also for the server:
 the tag "CHARGE_STATION" is used by the server to retrieve all pinned locations that are charging stations, and then checking
 if the robot is inside one of them (this is used in the auto-updating mechanism for the robot status, explained above).
+
+
+============
+
+### My todo I was following through this project
+
+============
+
+*In case of future reference to some work I've done on this project and how I've managed to complete the tasks, I'll leave here the todo list I was following and adding new tasks when discovering them.*
+
+- [x] Implement basic auth for stations and robots
+- [x] Refactor robot struct to move battery level outside - Add new fields
+- [x] update_battery_level should return a 200 status without any text
+- [x] Add update location endpoint && insert also in robot_history_locations
+    - [x] Change robot status to "BUSY" since it's moving
+    - [x] Detect if the location the robot is currently is inside the pinned_locations, and if so update the robot           according to that
+- [x] Write endpoint for adding new pinned_locations
+- [x] Fix registration for stations
+- [x] Write endpoint for retrieving all the robot location history
+- [x] Write endpoint for retrieving all robots
+- [x] Write cyclic function that verifies that the robot is working properly. If not, update robot status
+- [x] Change times with time crate and Timespec
+- [x] Write ws for robot
+- [x] Write ws for station
+- [x] Write endpoint for pinning the robot to a location (create charging station)
+- [x] Endpoint for all pinned locations
+- [x] Maintain pool of connected stations (subscribed to a specific event), and when the event is triggered, 
+    despatch it to all the interested parties
+- [] Maintain pool of connected robots and when a station sends a command to a robot 
+    (stop, go to charge point, to go point b), it dispatches to the correct robot the event
+
+*As you can see, only the last point is missing, unfortunately. In case you want to tackle the last one, you can base it on the dispatcher/event system I've already built.
+The main goal of the last point is to have more control over the robot, and possibly coordinate multiple robots through a centralized system, such as the server itself.*
