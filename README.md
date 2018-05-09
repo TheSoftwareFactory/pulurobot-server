@@ -265,7 +265,7 @@ if the robot is inside one of them (this is used in the auto-updating mechanism 
 - [x] Endpoint for all pinned locations
 - [x] Maintain pool of connected stations (subscribed to a specific event), and when the event is triggered, 
     despatch it to all the interested parties
-- [] Maintain pool of connected robots and when a station sends a command to a robot 
+- [ ] Maintain pool of connected robots and when a station sends a command to a robot 
     (stop, go to charge point, to go point b), it dispatches to the correct robot the event
 
 *As you can see, only the last point is missing, unfortunately. In case you want to tackle the last one, you can base it on the dispatcher/event system I've already built.
