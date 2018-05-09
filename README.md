@@ -34,13 +34,37 @@ Base endpoint path: `/api/v1/station`
     // "Authorization": JWT
     ```
 
-- [JWT REQUIRED] POST `/api/v1/station/pin-location`: Create new pinned location
+- [JWT REQUIRED] POST `/api/v1/station/pinned_location/new`: Create new pinned location
     ```json
     {
         "name": "PINNED_LOCATION_1",
         "x": "10",
         "y": "16",
         "angle": "45"
+    }
+    // application/json
+    ```
+
+- [JWT REQUIRED] GET `/api/v1/station/pinned_location/all`: Retrieve all pinned locations
+    ```json
+    // Result:
+    [
+        {
+            "id": 1,
+            "name": "CHARGE_1",
+            "x": 10,
+            "y": 10,
+            "angle": 0
+        }
+    ]
+    ```
+
+- [JWT REQUIRED] POST `/api/v1/station/robot/pinned_location/new`: Pin the robot to a location
+    ```json
+    {
+        "robot_id": 1,
+        "pinned_location_id": 1,
+        "tag": "CHARGING_POINT"
     }
     // application/json
     ```
